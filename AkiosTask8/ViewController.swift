@@ -10,26 +10,29 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var valueLabel: UILabel!
-    @IBOutlet weak var slider: UISlider!
+    @IBOutlet private weak var valueLabel: UILabel!
+    @IBOutlet private weak var slider: UISlider!
+    private let ud = UserDefaults.standard
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let sliderValue = ud.object(forKey: "slider.value") as? Float else {
+            valueLabel.text = "\(0.5)"
+            slider.value = 0.5
+            ud.set(0.5, forKey: "slider.value")
+            return
+        }
+        valueLabel.text = "\(sliderValue)"
+        slider.value = sliderValue
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tabBarController?.delegate = self
     }
 
     @IBAction private func slider(_ sender: UISlider) {
         valueLabel.text = "\(sender.value)"
+        ud.set(sender.value, forKey: "slider.value")
     }
     
 }
-
-extension ViewController: UITabBarControllerDelegate {
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        if let vc2 = viewController as? ViewController2 {
-            vc2.slider.value = slider.value
-            vc2.valueLabel.text = "\(slider.value)"
-        }
-    }
-}
-
